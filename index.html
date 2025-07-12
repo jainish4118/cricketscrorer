@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Responsive Cricket Scorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, rgb(254, 140, 0), #dce1e9,rgb(91, 91, 232),white,rgb(0, 173, 0));
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 20px;
+    }
+
+    .scoreboard {
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      padding: 30px 20px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .scoreboard h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ffcc;
+    }
+
+    .display {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+    }
+
+    .ball-history {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .ball-history .ball {
+      background-color: #222;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      color: #00ffcc;
+      border: 1px solid #00cc99;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .buttons button {
+      padding: 10px 14px;
+      font-size: 0.9em;
+      border: none;
+      border-radius: 6px;
+      background-color: #006600;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .buttons button:hover {
+      background-color: #00cc44;
+    }
+
+    .run-wicket-button {
+      background-color: #660000;
+    }
+
+    .run-wicket-button:hover {
+      background-color: #990000;
+    }
+
+    .noball-options {
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .noball-options p {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #ffcc00;
+    }
+
+    .noball-options button {
+      padding: 8px 12px;
+      font-size: 0.85em;
+      border: none;
+      border-radius: 5px;
+      background-color: #cc3300;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .noball-options button:hover {
+      background-color: #ff5722;
+    }
+
+    @media (max-width: 600px) {
+      .buttons button,
+      .noball-options button {
+        flex: 1 0 40%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scoreboard">
+    <h1>Cricket Scorer</h1>
+
+    <div class="display">
+      <p><strong>Score:</strong> <span id="runs">0</span>/<span id="wickets">0</span></p>
+      <p><strong>Overs:</strong> <span id="overs">0.0</span></p>
+    </div>
+
+    <div class="ball-history" id="ballHistory"></div>
+
+    <div class="buttons">
+      <button onclick="addRun(1)">1 Run</button>
+      <button onclick="addRun(2)">2 Runs</button>
+      <button onclick="addRun(3)">3 Runs</button>
+      <button onclick="addRun(4)">4 Runs</button>
+      <button onclick="addRun(5)">5 Runs</button>
+      <button onclick="addRun(6)">6 Runs</button>
+
+      <button class="run-wicket-button" onclick="addRunWithWicket(1)">1 Run + W</button>
+      <button class="run-wicket-button" onclick="addRunWithWicket(2)">2 Runs + W</button>
+      <button class="run-wicket-button" onclick="addRunWithWicket(3)">3 Runs + W</button>
+
+      <button style="background-color: rgb(19, 100, 19);" onclick="addBall()">Dot Ball</button>
+      <button style="background-color: red;" onclick="addWicket()">Wicket</button>
+      <button onclick="addWide()">Wide</button>
+      <button class="wideW" onclick="addWide(true)" style="background-color: orange;">Wide + Wicket</button>
+      <button style="background-color: orangered;" onclick="showNoBallOptions()">No Ball</button>
+      <button onclick="undo()">Undo</button>
+      <button onclick="saveMatch()">Save Match</button>
+      <button onclick="loadMatch()">Load Match</button>
+      <button style="background-color: white;color: black" onclick="reset()">Reset</button>
+    </div>
+
+    <div class="noball-options" id="noballOptions">
+      <p>No Ball Runs:</p>
+      <button onclick="addNoBallRun(-1)">0</button>
+      <button onclick="addNoBallRun(0)">1</button>
+      <button onclick="addNoBallRun(1)">2</button>
+      <button onclick="addNoBallRun(2)">3</button>
+      <button onclick="addNoBallRun(3)">4</button>
+      <button onclick="addNoBallRun(4)">5</button>
+      <button onclick="addNoBallRun(5)">6</button>
+      <button onclick="addNoBallRun(6)">7</button>
+
+      <p>No Ball + Wicket:</p>
+      <button onclick="addNoBallRun(0, true)">0+W</button>
+      <button onclick="addNoBallRun(1, true)">1+W</button>
+      <button onclick="addNoBallRun(2, true)">2+W</button>
+    </div>
+  </div>
+
+  <script>
+    let runs = 0;
+    let balls = 0;
+    let wickets = 0;
+    let innings = 1;
+    let undoStack = [];
+
+    function updateDisplay() {
+      document.getElementById("runs").innerText = runs;
+      document.getElementById("wickets").innerText = wickets;
+      document.getElementById("overs").innerText = Math.floor(balls / 6) + '.' + (balls % 6);
+    }
+
+    function addBallHistory(mark) {
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      ball.textContent = mark;
+      document.getElementById('ballHistory').appendChild(ball);
+    }
+
+    function captureState() {
+      undoStack.push({ runs, balls, wickets, innings });
+    }
+
+    function undo() {
+      if (undoStack.length > 0) {
+        const lastState = undoStack.pop();
+        runs = lastState.runs;
+        balls = lastState.balls;
+        wickets = lastState.wickets;
+        innings = lastState.innings;
+        updateDisplay();
+
+        // Remove last ball visually
+        const ballHistory = document.getElementById('ballHistory');
+        if (ballHistory.lastChild) {
+          ballHistory.removeChild(ballHistory.lastChild);
+        }
+      }
+    }
+
+    function addRun(run) {
+      captureState();
+      runs += run;
+      balls++;
+      addBallHistory(run);
+      updateDisplay();
+    }
+
+    function addBall() {
+      captureState();
+      balls++;
+      addBallHistory('.');
+      updateDisplay();
+    }
+
+    function addWicket() {
+      captureState();
+      wickets++;
+      balls++;
+      addBallHistory('W');
+      updateDisplay();
+    }
+
+    function addRunWithWicket(run) {
+      captureState();
+      runs += run;
+      wickets++;
+      balls++;
+      addBallHistory(run + '+W');
+      updateDisplay();
+    }
+
+    function addWide(isWicket = false) {
+      captureState();
+      runs += 1;
+      addBallHistory(isWicket ? 'Wd+W' : 'Wd');
+      if (isWicket) {
+        wickets++;
+      }
+      updateDisplay();
+    }
+
+    function showNoBallOptions() {
+      document.getElementById("noballOptions").style.display = 'flex';
+    }
+
+    function addNoBallRun(extraRuns, isWicket = false) {
+      captureState();
+      runs += 1 + extraRuns;
+      addBallHistory(isWicket ? 'Nb+W' : 'Nb');
+      if (isWicket) {
+        wickets++;
+      }
+      document.getElementById("noballOptions").style.display = 'none';
+      updateDisplay();
+    }
+
+    function reset() {
+      captureState();
+      runs = 0;
+      balls = 0;
+      wickets = 0;
+      innings = 1;
+      document.getElementById("noballOptions").style.display = 'none';
+      document.getElementById("ballHistory").innerHTML = '';
+      updateDisplay();
+    }
+
+    function saveMatch() {
+      const matchData = { runs, balls, wickets, innings };
+      localStorage.setItem('matchData', JSON.stringify(matchData));
+    }
+
+    function loadMatch() {
+      const matchData = JSON.parse(localStorage.getItem('matchData'));
+      if (matchData) {
+        runs = matchData.runs;
+        balls = matchData.balls;
+        wickets = matchData.wickets;
+        innings = matchData.innings;
+        updateDisplay();
+        document.getElementById('ballHistory').innerHTML = '';
+      }
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
